@@ -8,8 +8,13 @@ $panne=new Panne();
 
 if(isset($_POST['declarer'])){
     $panne->declarerDemande($idPersonne,$_POST);
-    header('Location: ../view/employe/index.php');
-    exit();
+    if($_SESSION['personne']['role']=='employe'){
+        header('Location: ../view/employe/index.php');
+        exit();
+    }elseif ($_SESSION['personne']['role']=='responsable'){
+        header('Location: ../view/responsable/DemanderIntervention.php');
+        exit();
+    }
 }
 $today = date('Y-m-d'); 
 if($_SERVER['REQUEST_METHOD']=='GET'){
