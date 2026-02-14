@@ -23,5 +23,9 @@ public function getSalles($idDep){
     $req->execute([$idDep]);
     return $req->fetchAll(PDO::FETCH_ASSOC);
 }
-
+public function getSallesEmploye($idDep){
+    $req=$this->pdo->prepare('select * from salles LEFT join users on users.idSalle=salles.idSalle where users.idSalle is null and idDepartement=?');
+    $req->execute([$idDep]);
+    return $req->fetchAll(PDO::FETCH_ASSOC);
+}
 }

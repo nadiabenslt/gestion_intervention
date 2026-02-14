@@ -101,6 +101,34 @@ require_once __DIR__.'/../../controller/getDepartementController.php';
           <a href="../../controller/logoutController.php" class="btn btn-outline-danger btn-sm">Déconnexion</a>
         </div>
       </div>
+      <?php if(isset($_SESSION['successde'])): ?>
+  <div class="alert alert-danger alert-dismissible fade show flash-bar" role="alert">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-x-circle-fill"></i>
+      <div><?= htmlspecialchars($_SESSION['successde']) ?></div>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['successde']); ?>
+<?php elseif(isset($_SESSION['ajouterEmploye'])): ?>
+  <div class="alert alert-success alert-dismissible fade show flash-bar" role="alert">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-check-circle-fill"></i>
+      <div><?= htmlspecialchars($_SESSION['ajouterEmploye']) ?></div>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['ajouterEmploye']); ?>
+<?php elseif(isset($_SESSION['successac'])): ?>
+  <div class="alert alert-primary alert-dismissible fade show flash-bar" role="alert">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-check-circle-fill"></i>
+      <div><?= htmlspecialchars($_SESSION['successac']) ?></div>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['successac']); ?>
+<?php endif; ?>
 
       <div class="p-3 p-lg-4">
       
@@ -113,7 +141,6 @@ require_once __DIR__.'/../../controller/getDepartementController.php';
         data-bs-toggle="modal" data-bs-target="#addEmployeModal">
   + Ajouter employé
 </button>
-
               </div>
 
               <div class="col-12 col-md">
@@ -195,7 +222,7 @@ require_once __DIR__.'/../../controller/getDepartementController.php';
                         Désactiver
                       </a>
                       <?php else: ?>
-                        <a href="../../controller/desactiverEmployeController.php?idD=<?= urlencode($id) ?>"
+                        <a href="../../controller/activerEmployeController.php?id=<?= urlencode($id) ?>"
                          class="btn btn-sm btn-outline-success"
                          onclick="return confirm('Activer le compte de cet employé ?')">
                         Activer
@@ -327,7 +354,7 @@ $perPage = $pagination['perPage'];
 
             <div class="col-12 col-md-6">
               <label for="add_departement" class="form-label">Département</label>
-              <select name="dep" id="departement" class="form-select" required>
+              <select name="dep" id="departement" class="form-select">
                 <option value="">-- choisi un departement --</option>
                 <?php foreach($departements as $d): ?>
                   <option value="<?= (int)$d['idDep'] ?>"><?= htmlspecialchars($d['nom']) ?></option>
@@ -337,7 +364,7 @@ $perPage = $pagination['perPage'];
 
             <div class="col-12 col-md-6">
               <label for="add_salle" class="form-label">Salle</label>
-              <select name="salle" id="salle" class="form-select" required>
+              <select name="salle" id="salle" class="form-select">
                 <option value="">-- choisi une salle --</option>
 
               </select>
@@ -433,16 +460,20 @@ $perPage = $pagination['perPage'];
     let depId = this.value;
 
     if(depId) {
-        fetch('/backend/controller/getSallesController.php?id=' + depId)
+        fetch('/backend/controller/getSalleEmployeController.php?id=' + depId)
         .then(response => response.json())
         .then(data => {
   let salleSelect = document.getElementById('salle');
-
-  salleSelect.innerHTML = `<option value="">--choisi une salle--</option>`;
+  if(data.length<=0){
+    salleSelect.innerHTML='<option value="" disabled selected> no salle disponible dans cette departement </option>';
+    
+  }else{
+    salleSelect.innerHTML = `<option value="">-- choisi une salle --</option>`;
 
   data.forEach(salle => {
     salleSelect.innerHTML += `<option value="${salle.idSalle}">${salle.numSalle}</option>`;
   });
+  }
 })
         .catch(error => console.error('Erreur:', error));
     }
