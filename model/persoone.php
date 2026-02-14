@@ -41,8 +41,8 @@ class Persoone{
         return $req->fetch(PDO::FETCH_ASSOC);
     }
     public function updateInfos($idPersonne,$data){
-        $req=$this->pdo->prepare('update users set nom=? , prenom=? , email=? where id=?');
-        return $req->execute([$data['nomPersonne'],$data['prenomPersonne'],$data['email'],$idPersonne]);
+        $req=$this->pdo->prepare('update users set nom=? , prenom=? , email=? , role=? where id=?');
+        return $req->execute([$data['nomPersonne'],$data['prenomPersonne'],$data['email'],$data['role'],$idPersonne]);
     }
     public function getTechniciens(){
         $req=$this->pdo->prepare('select id,nom,prenom from users where role="responsable" ');

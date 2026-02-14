@@ -4,10 +4,6 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/../model/Materiel.php';
 
 $materiel = new Materiel();
-
-/**
- * POST: update materiel
- */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int)($_POST['idMateriel'] ?? 0);
 

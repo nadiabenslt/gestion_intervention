@@ -119,6 +119,15 @@ require_once __DIR__.'/../../controller/getDepartementController.php';
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
   <?php unset($_SESSION['ajouterEmploye']); ?>
+  <?php elseif(isset($_SESSION['success'])): ?>
+  <div class="alert alert-success alert-dismissible fade show flash-bar" role="alert">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-check-circle-fill"></i>
+      <div><?= htmlspecialchars($_SESSION['success']) ?></div>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['success']); ?>
 <?php elseif(isset($_SESSION['successac'])): ?>
   <div class="alert alert-primary alert-dismissible fade show flash-bar" role="alert">
     <div class="d-flex align-items-center gap-2">
@@ -163,7 +172,6 @@ require_once __DIR__.'/../../controller/getDepartementController.php';
     <button class="btn btn-outline-primary w-100">Rechercher</button>
   </div>
 </form>
-
               </div>
             </div>
           </div>
@@ -172,7 +180,7 @@ require_once __DIR__.'/../../controller/getDepartementController.php';
 
           <?php if (!empty($employes)): ?>
             <?php foreach ($employes as $e): 
-              $id = $e['id'];
+              $id = (int)($e['id'] ?? 0);;
               $nom = htmlspecialchars($e['nomEmploye'] ?? '');
               $prenom = htmlspecialchars($e['prenom'] ?? '');
               $email = htmlspecialchars($e['email'] ?? '');
@@ -212,7 +220,7 @@ require_once __DIR__.'/../../controller/getDepartementController.php';
                     <?php if ($id !== null): ?>
                       
                       <button type="button" class="btn btn-sm btn-outline-secondary"
-                        data-bs-toggle="modal" data-bs-target="#editEmployeModal<?= (int)$id ?>">
+                        data-bs-toggle="modal" data-bs-target="#editEmployeModal<?= $id ?>">
                       Modifier
                       </button>
                       <?php if($isActive==1): ?>
@@ -235,6 +243,61 @@ require_once __DIR__.'/../../controller/getDepartementController.php';
                   </div>
                 </div>
               </div>
+              
+<div class="modal fade" id="editEmployeModal<?= $id ?>" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <form method="post" action="../../controller/UpdateEmployeController.php?id=<?= $id ?>">
+        <div class="modal-header">
+          <h5 class="modal-title">Modifier employé</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" name="id" value="<?= $id ?>">
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">Matricule</label>
+<input type="text" name="matricule" class="form-control" value="<?= htmlspecialchars($matricule) ?>" readonly>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Nom</label>
+              <input type="text" name="nomPersonne" class="form-control" value="<?= htmlspecialchars($nom) ?>">
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Prénom</label>
+              <input type="text" name="prenomPersonne" class="form-control" value="<?= htmlspecialchars($prenom) ?>">
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($email) ?>">
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Rôle</label>
+              <select name="role" class="form-select" required>
+                <option value="employe" <?= ($role==='employe')?'selected':'' ?>>Employé</option>
+                <option value="responsable" <?= ($role==='responsable')?'selected':'' ?>>Responsable informatique</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" name="modifier" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
             <?php endforeach; ?>
 
           <?php else: ?>
@@ -297,13 +360,9 @@ $perPage = $pagination['perPage'];
 
   </ul>
 </nav>
-
-
         </div>
-
       </div>
     </main>
-
   </div>
 </div>
 <div class="modal fade" id="addEmployeModal" tabindex="-1" aria-hidden="true">
@@ -376,65 +435,6 @@ $perPage = $pagination['perPage'];
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
           <button type="submit" name="ajouter" class="btn btn-success">Ajouter</button>
-        </div>
-      </form>
-
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="editEmployeModal<?= (int)$id ?>" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-
-      <form method="post" action="../../controller/UpdateEmployeController.php">
-        <div class="modal-header">
-          <h5 class="modal-title">Modifier employé</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-        </div>
-
-        <div class="modal-body">
-          <input type="hidden" name="id" value="<?= (int)$id ?>">
-
-          <div class="row g-3">
-            <div class="col-12 col-md-6">
-              <label class="form-label">Matricule</label>
-              <input type="text" name="matricule" class="form-control" value="<?= $matricule ?>">
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Nom</label>
-              <input type="text" name="nom" class="form-control" value="<?= $nom ?>">
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Prénom</label>
-              <input type="text" name="prenom" class="form-control" value="<?= $prenom ?>">
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Email</label>
-              <input type="email" name="email" class="form-control" value="<?= $email ?>">
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Mot de passe (optionnel)</label>
-              <input type="password" name="pwd" class="form-control" placeholder="Laisser vide si inchangé">
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Rôle</label>
-              <select name="role" class="form-select" required>
-                <option value="employe" <?= ($role==='employe')?'selected':'' ?>>Employé</option>
-                <option value="responsable" <?= ($role==='responsable')?'selected':'' ?>>Responsable informatique</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
-          <button type="submit" name="modifier" class="btn btn-primary">Enregistrer</button>
         </div>
       </form>
 
